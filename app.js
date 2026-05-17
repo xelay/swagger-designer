@@ -1095,9 +1095,9 @@ class UI {
       return schema ? Parser.schemaToFlat(schema) : [];
     };
 
-    const renderRows = (schemaName) => {
+    const renderRows = (schemaName, overrideRows) => {
       tbody.innerHTML = '';
-      const rows = getRows(schemaName);
+      const rows = overrideRows !== undefined ? overrideRows : getRows(schemaName);
       if (!rows.length) {
         const tr = document.createElement('tr');
         tr.innerHTML = `<td colspan="5" style="text-align:center;color:var(--color-text-faint);padding:var(--space-4)">No fields. Click "Add Field" to define the schema.</td>`;
@@ -1118,22 +1118,20 @@ class UI {
         `;
         const [inpPath, selType, inpDesc, inpEx] = [tr.querySelector('.td-path'), tr.querySelector('select'), ...tr.querySelectorAll('input:not(.td-path)')];
         const saveRows = () => {
-          const curRows = getRows(nameInput.value);
-          curRows[i] = {
+          rows[i] = {
             path: inpPath.value,
             type: selType.value,
             description: inpDesc.value,
             example: inpEx.value,
           };
-          const newSchema = Parser.flatToSchema(curRows);
+          const newSchema = Parser.flatToSchema(rows);
           this.store.setSchema(nameInput.value, newSchema);
           this._linkSchema(pathStr, method, context, statusCode, nameInput.value);
         };
         [inpPath, selType, inpDesc, inpEx].forEach(el => el.addEventListener('input', saveRows));
         tr.querySelector('.btn-icon.danger').addEventListener('click', () => {
-          const curRows = getRows(nameInput.value);
-          curRows.splice(i, 1);
-          const newSchema = Parser.flatToSchema(curRows);
+          rows.splice(i, 1);
+          const newSchema = Parser.flatToSchema(rows);
           this.store.setSchema(nameInput.value, newSchema);
           this._linkSchema(pathStr, method, context, statusCode, nameInput.value);
           renderRows(nameInput.value);
@@ -1163,9 +1161,10 @@ class UI {
       }
       const curRows = getRows(sName);
       curRows.push({ path: '', type: 'string', description: '', example: '' });
-      const newSchema = Parser.flatToSchema(curRows);
-      this.store.setSchema(sName, newSchema);
-      renderRows(sName);
+      // Pass rows directly so the new empty row renders immediately.
+      // flatToSchema skips empty-path rows, so we cannot save to schema yet —
+      // saving happens via saveRows once the user types a field name.
+      renderRows(sName, curRows);
     });
 
     // Init: ensure schema exists
