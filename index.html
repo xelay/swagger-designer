@@ -1,106 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swagger Designer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        
-        .features {
-            text-align: left;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 8px;
-        }
-        
-        .features li {
-            list-style-position: inside;
-            margin: 10px 0;
-            color: #555;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1em;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 5px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .footer {
-            margin-top: 40px;
-            color: #999;
-            font-size: 0.9em;
-        }
-    </style>
+    <title>Swagger Designer - OpenAPI Editor</title>
+    
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/materialize.min.css">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- js-yaml для парсинга YAML -->
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🎨 Swagger Designer</h1>
-        <p class="subtitle">Design and manage your API specifications with ease</p>
-        
-        <ul class="features">
-            <li>✨ Modern and intuitive interface</li>
-            <li>📝 Create and edit Swagger/OpenAPI specifications</li>
-            <li>🔄 Real-time preview and validation</li>
-            <li>💾 Save and export your designs</li>
-            <li>🚀 Deploy with confidence</li>
-        </ul>
-        
-        <button onclick="alert('Welcome to Swagger Designer!')">Get Started</button>
-        <button onclick="alert('Documentation coming soon!')">Learn More</button>
-        
-        <div class="footer">
-            <p>Swagger Designer © 2026</p>
-            <p>Build better APIs with confidence</p>
+    <!-- Хэдер -->
+    <header class="navbar-fixed">
+        <nav class="nav-bar">
+            <div class="nav-wrapper container">
+                <a href="#" class="brand-logo">Swagger Designer</a>
+                <ul class="right">
+                    <li>
+                        <a href="#!" id="themeToggle" class="waves-effect waves-light" title="Переключить тему">
+                            <i class="material-icons">brightness_4</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#!" class="waves-effect waves-light" id="newApiBtn" title="Создать новый API">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#!" class="waves-effect waves-light" id="importBtn" title="Импортировать">
+                            <i class="material-icons">publish</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#!" class="waves-effect waves-light" id="exportJsonBtn" title="Экспорт JSON">
+                            <i class="material-icons">download</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#!" class="waves-effect waves-light" id="exportYamlBtn" title="Экспорт YAML">
+                            <i class="material-icons">get_app</i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container-main">
+        <!-- Сайдбар -->
+        <aside class="sidebar">
+            <div class="sidebar-header" id="apiRootNode">
+                <span id="apiName">Новый API</span>
+                <button class="btn-icon" id="editApiBtn" title="Редактировать метаданные">
+                    <i class="material-icons">edit</i>
+                </button>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Дерево навигации генерируется JS -->
+            </div>
+        </aside>
+
+        <!-- Основное окно контента -->
+        <main class="content">
+            <div id="contentArea">
+                <!-- Контент генерируется JS в зависимости от клика -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden file input для импорта -->
+    <input type="file" id="fileInput" style="display: none;" accept=".json,.yaml,.yml">
+
+    <!-- Модальное окно для ошибок -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <h4>Ошибка</h4>
+            <p id="errorMessage"></p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрыть</a>
         </div>
     </div>
+
+    <!-- Модальное окно для создания новой конфигурации API -->
+    <div id="newApiModal" class="modal">
+        <div class="modal-content">
+            <h4>Создать новый API</h4>
+            <p>При создании нового API текущие данные будут удалены. Продолжить?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Отмена</a>
+            <a href="#!" class="waves-effect waves-red btn red" id="confirmNewApi">Создать</a>
+        </div>
+    </div>
+
+    <!-- Модальное окно для импорта -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <h4>Импортировать API</h4>
+            <p>При импорте текущие данные будут удалены. Продолжить?</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Отмена</a>
+            <a href="#!" class="waves-effect waves-red btn red" id="confirmImport">Импортировать</a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
