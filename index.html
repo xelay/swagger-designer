@@ -1,118 +1,103 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swagger Designer - OpenAPI Editor</title>
-    
-    <!-- Materialize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/materialize.min.css">
-    
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-    <!-- js-yaml для парсинга YAML -->
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swagger Designer</title>
+
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Хэдер -->
-    <header class="navbar-fixed">
-        <nav class="nav-bar">
-            <div class="nav-wrapper container">
-                <a href="#" class="brand-logo">Swagger Designer</a>
-                <ul class="right">
-                    <li>
-                        <a href="#!" id="themeToggle" class="waves-effect waves-light" title="Переключить тему">
-                            <i class="material-icons">brightness_4</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#!" class="waves-effect waves-light" id="newApiBtn" title="Создать новый API">
-                            <i class="material-icons">add</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#!" class="waves-effect waves-light" id="importBtn" title="Импортировать">
-                            <i class="material-icons">publish</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#!" class="waves-effect waves-light" id="exportJsonBtn" title="Экспорт JSON">
-                            <i class="material-icons">download</i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#!" class="waves-effect waves-light" id="exportYamlBtn" title="Экспорт YAML">
-                            <i class="material-icons">get_app</i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
 
-    <div class="container-main">
-        <!-- Сайдбар -->
-        <aside class="sidebar">
-            <div class="sidebar-header" id="apiRootNode">
-                <span id="apiName">Новый API</span>
-                <button class="btn-icon" id="editApiBtn" title="Редактировать метаданные">
-                    <i class="material-icons">edit</i>
-                </button>
-            </div>
-            <div class="sidebar-content" id="sidebarContent">
-                <!-- Дерево навигации генерируется JS -->
-            </div>
-        </aside>
+<!-- HEADER -->
+<header id="app-header">
+  <div class="header-brand">
+    <svg class="brand-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Swagger Designer">
+      <rect x="2" y="2" width="28" height="28" rx="6" fill="var(--color-primary)" />
+      <path d="M8 22 L12 10 L16 18 L20 13 L24 22" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <circle cx="16" cy="10" r="2" fill="white" opacity="0.7"/>
+    </svg>
+    <span class="brand-name">Swagger Designer</span>
+  </div>
+  <div class="header-actions">
+    <button class="hdr-btn" id="btn-new" title="New API">
+      <i class="material-icons">add_circle_outline</i>
+      <span>New</span>
+    </button>
+    <button class="hdr-btn" id="btn-import" title="Import JSON/YAML">
+      <i class="material-icons">upload_file</i>
+      <span>Import</span>
+    </button>
+    <button class="hdr-btn" id="btn-export-json" title="Export JSON">
+      <i class="material-icons">data_object</i>
+      <span>Export JSON</span>
+    </button>
+    <button class="hdr-btn" id="btn-export-yaml" title="Export YAML">
+      <i class="material-icons">description</i>
+      <span>Export YAML</span>
+    </button>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Switch theme">
+      <i class="material-icons" id="theme-icon">dark_mode</i>
+    </button>
+  </div>
+  <input type="file" id="file-input" accept=".json,.yaml,.yml" style="display:none" />
+</header>
 
-        <!-- Основное окно контента -->
-        <main class="content">
-            <div id="contentArea">
-                <!-- Контент генерируется JS в зависимости от клика -->
-            </div>
-        </main>
+<!-- MAIN LAYOUT -->
+<div id="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Navigation</span>
     </div>
+    <div id="tree-root"></div>
+  </aside>
 
-    <!-- Hidden file input для импорта -->
-    <input type="file" id="fileInput" style="display: none;" accept=".json,.yaml,.yml">
-
-    <!-- Модальное окно для ошибок -->
-    <div id="errorModal" class="modal">
-        <div class="modal-content">
-            <h4>Ошибка</h4>
-            <p id="errorMessage"></p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Закрыть</a>
-        </div>
+  <!-- CONTENT AREA -->
+  <main id="content-area">
+    <div id="content-panel">
+      <div class="empty-state">
+        <i class="material-icons empty-icon">api</i>
+        <h3>No API loaded</h3>
+        <p>Create a new API or import an existing specification to get started.</p>
+        <button class="btn" id="btn-new-empty" style="background:var(--color-primary)">Create New API</button>
+      </div>
     </div>
+  </main>
 
-    <!-- Модальное окно для создания новой конфигурации API -->
-    <div id="newApiModal" class="modal">
-        <div class="modal-content">
-            <h4>Создать новый API</h4>
-            <p>При создании нового API текущие данные будут удалены. Продолжить?</p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Отмена</a>
-            <a href="#!" class="waves-effect waves-red btn red" id="confirmNewApi">Создать</a>
-        </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<!-- ERROR MODAL -->
+<div id="error-modal" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <i class="material-icons" style="color:var(--color-error)">error_outline</i>
+      <h4>Parse Error</h4>
     </div>
-
-    <!-- Модальное окно для импорта -->
-    <div id="importModal" class="modal">
-        <div class="modal-content">
-            <h4>Импортировать API</h4>
-            <p>При импорте текущие данные будут удалены. Продолжить?</p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Отмена</a>
-            <a href="#!" class="waves-effect waves-red btn red" id="confirmImport">Импортировать</a>
-        </div>
+    <div class="modal-body" id="error-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn" id="error-modal-close" style="background:var(--color-primary)">OK</button>
     </div>
+  </div>
+</div>
 
-    <script src="app.js"></script>
+<!-- js-yaml -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<!-- Materialize JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
